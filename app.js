@@ -1,12 +1,12 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const multer = require('multer');
 const path = require('path');
 const dbConnect = require('./db');
 require('dotenv').config();
-
 
 //initiate app
 const app = express();
@@ -16,15 +16,22 @@ dbConnect();
 
 //middlewares
 app.use(express.json());
-app.use(helmet());
+app.use(helmet()); //Set Security HTTP headers
 app.use(cors());
-app.use(morgan('dev'));
-app.use(express.urlencoded({ extended: false }));
 
+//Development logging
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 //routes
 app.use('/api/auth', require(`./routes/auth`));
 app.use('/api/contacts', require(`./routes/contact`));
 app.use('/api/groups', require(`./routes/group`));
+app.use('/api/senders', require(`./routes/sender`));
+app.use('/api/messages', require(`./routes/message`));
 
 module.exports = app;

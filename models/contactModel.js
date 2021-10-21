@@ -35,11 +35,17 @@ const contactSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: [true, 'Please enter a valid phone number'],
+      validate: {
+        validator: function (v) {
+          return /\d{3}-\d{3}-\d{4}/.test(v);
+        },
+        message: (props) => `${props.value} is not a valid phone number!`,
+      },
+      required: [true, 'Contact phone number required'],
     },
     group: {
       type: mongoose.Types.ObjectId,
-      ref:'Group',
+      ref: 'Group',
       required: [true, 'Please select a group'],
     },
   },

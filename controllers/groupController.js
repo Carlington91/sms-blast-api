@@ -1,64 +1,69 @@
 const Group = require('../models/groupModel');
-const catchAsyncErrors = require('../utils/catchAsyncErrors');
-const ErrorHandler = require('../utils/errorHandler');
+const factory = require('./handlerFactory');
 
-exports.create = catchAsyncErrors(async (req, res) => {
-  const { name, desc } = req.body;
 
-  const group = await Group.create({
-    name,
-    desc,
-  });
+exports.create = factory.createOne(Group, 'Group created successfully');
+exports.update = factory.updateOne(Group, 'Group updated successfully');
+exports.remove = factory.deleteOne(Group, 'Group deleted successfully');
+exports.list = factory.getAll(Group);
+exports.read = factory.getOne(Group);
 
-  if (!group) return next(new ErrorHandler('Error creating group', 400));
 
-  res.status(200).json({
-    success: true,
-    group,
-  });
-});
+// exports.create = catchAsyncErrors(async (req, res, next) => {
+//   const group = await Group.create(req.body);
+//   console.log(group);
+//   if (!group) return next(new ErrorHandler('Error creating group', 400));
 
-exports.list = catchAsyncErrors(async (req, res) => {
-  const groups = await Group.find().sort({'createdAt':-1});
-  if (!groups) return next(new ErrorHandler('No group found', 404));
+//   res.status(200).json({
+//     success: true,
+//     msg: 'Group created successfully',
+//     group,
+//   });
+// });
 
-  res.status(200).json({
-    success: true,
-    groups,
-  });
-});
+// exports.list = catchAsyncErrors(async (req, res, next) => {
+//   const groups = await Group.find().sort({ createdAt: -1 });
+//   if (!groups) return next(new ErrorHandler('No group found', 404));
 
-exports.read = catchAsyncErrors(async (req, res) => {
-  const group = await Group.findById(req.query.id);
-  if (!group) return next(new ErrorHandler('No group found', 404));
+//   res.status(200).json({
+//     success: true,
+//     groups,
+//   });
+// });
 
-  res.status(200).json({
-    success: true,
-    group,
-  });
-});
+// exports.read = catchAsyncErrors(async (req, res, next) => {
+//   const group = await Group.findById(req.query.id);
+//   if (!group) return next(new ErrorHandler('No group found', 404));
 
-exports.update = catchAsyncErrors(async (req, res) => {
+//   res.status(200).json({
+//     success: true,
+//     group,
+//   });
+// });
 
-  let  group = await Group.findById(req.query.id);
-  if (!group) return next(new ErrorHandler('No group found', 404));
+// exports.update = catchAsyncErrors(async (req, res, next) => {
+//   let group = await Group.findById(req.query.id);
+//   if (!group) return next(new ErrorHandler('No group found', 404));
 
-  group = await Group.findByIdAndUpdate(group._id, {$set:req.body},{new:true})
+//   group = await Group.findByIdAndUpdate(
+//     group._id,
+//     { $set: req.body },
+//     { new: true },
+//   );
 
-  res.status(200).json({
-    success: true,
-    group,
-  });
-});
+//   res.status(200).json({
+//     success: true,
+//     group,
+//   });
+// });
 
-exports.remove = catchAsyncErrors(async (req, res) => {
-  const group = await Group.findById(req.query.id);
-  if (!group) return next(new ErrorHandler('No group found', 404));
+// exports.remove = catchAsyncErrors(async (req, res, next) => {
+//   const group = await Group.findById(req.query.id);
+//   if (!group) return next(new ErrorHandler('No group found', 404));
 
-  await group.remove()
+//   await group.remove();
 
-  res.status(200).json({
-    success: true,
-    
-  });
-});
+//   res.status(200).json({
+//     success: true,
+//   });
+// });

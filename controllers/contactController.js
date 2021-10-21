@@ -13,7 +13,7 @@ exports.create = catchAsyncErrors(async (req, res) => {
 });
 
 exports.list = catchAsyncErrors(async (req, res) => {
-  const contacts = await Contact.find()
+  const contacts = await Contact.find({ group: req.query.group })
     .sort({ createdAt: -1 })
     .populate('group', 'name');
   if (!contacts) return next(new ErrorHandler('No contact found', 404));
