@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const auth = require('../middlewares/auth');
 const {
   create,
   list,
@@ -6,6 +7,8 @@ const {
   update,
   remove,
 } = require('../controllers/senderController');
+//auth
+router.use(auth);
 
 router.post('/', create);
 router.get('/', list);

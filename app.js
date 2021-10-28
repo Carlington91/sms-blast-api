@@ -17,7 +17,12 @@ dbConnect();
 //middlewares
 app.use(express.json());
 app.use(helmet()); //Set Security HTTP headers
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
+);
 
 //Development logging
 if (process.env.NODE_ENV === 'development') {

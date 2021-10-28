@@ -1,4 +1,6 @@
 const router = require('express').Router();
+const auth = require('../middlewares/auth');
+
 const {
   createPresetMessage,
   presetMessages,
@@ -8,6 +10,8 @@ const {
   sendGroupMessage,
 } = require('../controllers/messageController');
 
+//auth
+router.use(auth);
 router.post('/create-preset-message', createPresetMessage);
 router.get('/preset-messages', presetMessages);
 router.get('/preset-message', presetMessage);

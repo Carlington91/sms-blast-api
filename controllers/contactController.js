@@ -2,6 +2,17 @@ const Contact = require('../models/contactModel');
 const catchAsyncErrors = require('../utils/catchAsyncErrors');
 const ErrorHandler = require('../utils/errorHandler');
 
+
+function isValid(p) {
+  const phoneRe = /^[2-9]\d{2}[2-9]\d{2}\d{4}$/;
+  if (p) {
+    let digits = p.replace(/\D/g, '');
+    if (phoneRe.test(digits)) {
+      return digits;
+    }
+  }
+}
+
 exports.create = catchAsyncErrors(async (req, res) => {
   const contact = await Contact.create(req.body);
   if (!contact) return next(new ErrorHandler('Error creating contact', 400));
@@ -9,6 +20,30 @@ exports.create = catchAsyncErrors(async (req, res) => {
   res.status(200).json({
     success: true,
     contact,
+  });
+});
+
+exports.createContactExcelCsv = catchAsyncErrors(async (req, res) => {
+  const { formFile } = req.body;
+  const contacts = await Contact.find();
+
+  formFile.rows.map(async (c) => {
+    c.group = req.body.group;
+
+    if (!contacts.includes(c)) {
+      let phone = isValid(c.phone);
+      c.phone = phone;
+      console.log('', c);
+      await Contact.create(c);
+    } else {
+      console.log('', c);
+    }
+  });
+
+  // console.log('test: ', req.body);
+
+  res.status(200).json({
+    success: true,
   });
 });
 
