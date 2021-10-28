@@ -17,6 +17,7 @@ exports.presetMessages = factory.getAll(Message);
 exports.presetMessage = factory.getOne(Message);
 
 exports.sendGroupMessage = catchAsyncErrors(async (req, res) => {
+  console.log(req.user);
   console.log(req.body);
 
   res.status(200).json({

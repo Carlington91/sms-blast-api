@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 const setTokenAndCookie = (user, res) => {
   const token = jwt.sign(
-    { id: user._id, isAdmin: user.isAdmin },
+    { user: { id: user._id, isAdmin: user.isAdmin } },
     process.env.JWT_SECRET,
     {
       expiresIn: process.env.JWT_EXPIRES_IN,

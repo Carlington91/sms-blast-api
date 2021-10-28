@@ -5,10 +5,15 @@ const ErrorHandler = require('../utils/errorHandler');
 
 module.exports = catchAsyncErrors(async (req, res, next) => {
   const token = req.cookies.jwt;
+   
    if (!token) return next(new ErrorHandler('You are not logged in', 401));
-   const verified = jwt.verify(token,process.env.JWT_SECRET)
-   if(!verified) return next(new ErrorHandler('Expired or invalid token',403))
-   req.user = verified.user
+   const verified = jwt.verify(token, process.env.JWT_SECRET);
+
+   if (!verified)
+     return next(new ErrorHandler('Expired or invalid token', 403));
+
+   req.user = verified.user;
+  
   next();
 });
 

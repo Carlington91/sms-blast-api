@@ -3,6 +3,8 @@ const ErrorHandler = require('../utils/errorHandler');
 
 exports.createOne = (Model, msg = '') =>
   catchAsyncErrors(async (req, res, next) => {
+
+    console.log(req.user);
     const newDoc = await Model.create(req.body);
 
     res.status(201).json({
