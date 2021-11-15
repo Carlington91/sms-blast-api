@@ -6,7 +6,7 @@ const auth = require('../middlewares/auth');
 router.use(auth);
 router.post('/', create);
 router.get('/', list);
-router.get('/', read);
+router.get('/group', read);
 router.put('/', update);
 router.delete('/', remove);
 

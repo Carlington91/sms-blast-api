@@ -8,6 +8,8 @@ const {
   update,
   removePresetMessage,
   sendGroupMessage,
+  sentMessages,
+  sentMessage,
 } = require('../controllers/messageController');
 
 //auth
@@ -18,7 +20,9 @@ router.get('/preset-message', presetMessage);
 router.put('/preset-message', update);
 router.delete('/preset-message', removePresetMessage);
 
-//group message
+//Group message
 router.post('/send-group-message', sendGroupMessage);
+router.get('/sent-messages', sentMessages);
+router.get('/sent-messages/:id', sentMessage);
 
 module.exports = router;

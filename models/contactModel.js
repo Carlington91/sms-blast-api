@@ -22,7 +22,6 @@ const contactSchema = new mongoose.Schema(
     middlename: {
       type: String,
       trim: true,
-      minlength: 2,
       maxlength: 20,
     },
     email: {
@@ -35,12 +34,12 @@ const contactSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      validate: {
-        validator: function (v) {
-          return /\d{3}-\d{3}-\d{4}/.test(v);
-        },
-        message: (props) => `${props.value} is not a valid phone number!`,
-      },
+      // validate: {
+      //   validator: function (p) {
+      //     // return /\d{3}-\d{3}-\d{4}/.test(v);
+      //   },
+      //   message: (props) => `${props.value} is not a valid phone number!`,
+      // },
       required: [true, 'Contact phone number required'],
     },
     group: {

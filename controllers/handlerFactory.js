@@ -1,14 +1,20 @@
 const catchAsyncErrors = require('../utils/catchAsyncErrors');
 const ErrorHandler = require('../utils/errorHandler');
 
-exports.createOne = (Model, msg = '') =>
+exports.createOne = (Model, option, msg = '') =>
   catchAsyncErrors(async (req, res, next) => {
+    const value = req.body[option].trim();
 
-    console.log(req.user);
+    const x = {
+      [option]: value,
+    };
+    const doc = await Model.findOne(x);
+    if (doc) return next(new ErrorHandler(`${option} already exist`, 400));
+
     const newDoc = await Model.create(req.body);
 
     res.status(201).json({
-      status: 'success',
+      success: true,
       data: newDoc,
       msg,
     });
@@ -26,7 +32,7 @@ exports.updateOne = (Model, msg = '') =>
     }
 
     res.status(204).json({
-      status: 'success',
+      success: true,
       data: null,
       msg,
     });
@@ -41,18 +47,21 @@ exports.deleteOne = (Model, msg = '') =>
     }
 
     res.status(200).json({
-      status: 'success',
+      success: true,
       data: null,
       msg,
     });
   });
 
-exports.getAll = (Model) =>
+exports.getAll = (Model, populateOptions) =>
   catchAsyncErrors(async (req, res, next) => {
-    const docs = await Model.find().sort({ createdAt: -1 });
+    let query = Model.find().sort({ createdAt: -1 });
+    if (populateOptions) query = query.populate(populateOptions);
+
+    const docs = await query;
 
     res.status(200).json({
-      status: 'success',
+      success: true,
       count: docs.length,
       results: docs,
     });
@@ -60,8 +69,9 @@ exports.getAll = (Model) =>
 
 exports.getOne = (Model, populateOptions) =>
   catchAsyncErrors(async (req, res, next) => {
-    let query = Model.findById(req.query.id);
+    let query = Model.findById(req.query.id || req.params.id);
     if (populateOptions) query = query.populate(populateOptions);
+
     const doc = await query;
 
     if (!doc) {
@@ -69,7 +79,7 @@ exports.getOne = (Model, populateOptions) =>
     }
 
     res.status(200).json({
-      status: 'success',
+      success: true,
       result: doc,
     });
   });

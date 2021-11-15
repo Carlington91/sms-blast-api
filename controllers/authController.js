@@ -41,7 +41,7 @@ exports.register = catchAsyncErrors(async (req, res, next) => {
   setTokenAndCookie(user, res);
 
   res.status(201).json({
-    status: 'success',
+    success: true,
     user,
   });
 });
@@ -69,7 +69,7 @@ exports.logout = catchAsyncErrors(async (req, res, next) => {
     httpOnly: true,
     expires: new Date(0),
   });
-  res.status(200).json({ status: 'success' });
+  res.status(200).json({ success: true });
 });
 
 exports.isLoggedIn = catchAsyncErrors(async (req, res, next) => {
@@ -77,7 +77,7 @@ exports.isLoggedIn = catchAsyncErrors(async (req, res, next) => {
   if (!token) return next();
   const verified = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
 
-  const user = await User.findById(verified.id);
+  const user = await User.findById(verified.user.id);
 
   if (!user) return next();
 

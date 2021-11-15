@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const groupSchema = new mongoose.Schema(
   {
@@ -9,6 +10,7 @@ const groupSchema = new mongoose.Schema(
       minlength: [2, 'Post name must be 2 or more characters'],
       trim: true,
     },
+    slug: String,
     desc: {
       type: String,
       required: [true, 'Post description required'],
@@ -20,5 +22,10 @@ const groupSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+groupSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true, unique: true });
+  next();
+});
 
 module.exports = mongoose.model('Group', groupSchema);

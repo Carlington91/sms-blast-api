@@ -2,7 +2,7 @@ const Group = require('../models/groupModel');
 const factory = require('./handlerFactory');
 
 
-exports.create = factory.createOne(Group, 'Group created successfully');
+exports.create = factory.createOne(Group, 'name', 'Group created successfully');
 exports.update = factory.updateOne(Group, 'Group updated successfully');
 exports.remove = factory.deleteOne(Group, 'Group deleted successfully');
 exports.list = factory.getAll(Group);

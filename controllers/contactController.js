@@ -3,19 +3,34 @@ const catchAsyncErrors = require('../utils/catchAsyncErrors');
 const ErrorHandler = require('../utils/errorHandler');
 
 
-function isValid(p) {
-  const phoneRe = /^[2-9]\d{2}[2-9]\d{2}\d{4}$/;
-  if (p) {
-    let digits = p.replace(/\D/g, '');
-    if (phoneRe.test(digits)) {
-      return digits;
-    }
+// function isValid(p) {
+//   const phoneRe = /^[2-9]\d{2}[2-9]\d{2}\d{4}$/;
+//   if (p) {
+//     let digits = p.replace(/\D/g, '');
+//     const format = digits.match(phoneRegex)
+//     if (phoneRe.test(digits)) {
+//       return digits;
+//     }
+//   }
+// }
+
+function formatPhoneNumber(p) {
+  const phoneRegex = /^(\d{3})(\d{3})(\d{4})$/;
+
+  let digits = p.replace(/\D/g, '');
+  const format = digits.match(phoneRegex);
+  if (format) {
+    return `(${format[1]}) ${format[2]}-${format[3]}`;
   }
+  return null;
 }
 
-exports.create = catchAsyncErrors(async (req, res) => {
-  const contact = await Contact.create(req.body);
-  if (!contact) return next(new ErrorHandler('Error creating contact', 400));
+exports.create = catchAsyncErrors(async (req, res,next) => {
+  let contact = await Contact.findOne({phone:req.body.phone})
+  if (contact) return next(new ErrorHandler(`A contact with ${req.body.phone} already existed`, 400));
+
+  contact = await Contact.create(req.body);
+ 
 
   res.status(200).json({
     success: true,
@@ -23,24 +38,31 @@ exports.create = catchAsyncErrors(async (req, res) => {
   });
 });
 
-exports.createContactExcelCsv = catchAsyncErrors(async (req, res) => {
+exports.createContactExcelCsv = catchAsyncErrors(async (req, res, next) => {
   const { formFile } = req.body;
-  const contacts = await Contact.find();
+  let contact;
+  let contacts = [];
+  let error = []
 
-  formFile.rows.map(async (c) => {
+  await Promise.all(formFile.rows.map(async (c) => {
     c.group = req.body.group;
+    let phone = formatPhoneNumber(c.phone);
+    c.phone = phone;
+  
+    contact = await Contact.findOne({ firstname:c.firstname });
+    return contact ? error.push(c):contacts.push(c);
+  }))
 
-    if (!contacts.includes(c)) {
-      let phone = isValid(c.phone);
-      c.phone = phone;
-      console.log('', c);
-      await Contact.create(c);
-    } else {
-      console.log('', c);
-    }
+  const errMessage = Object.values(error).map((el) => {
+    return `${el.firstname} ${el.middlename && el.middlename} ${el.lastname} with ${el.phone} already exist`;
   });
 
-  // console.log('test: ', req.body);
+  console.log(errMessage);
+
+  if(error.length > 0) return next(new ErrorHandler(errMessage, 400));
+
+  await Contact.insertMany(contacts);
+  
 
   res.status(200).json({
     success: true,
@@ -60,7 +82,8 @@ exports.list = catchAsyncErrors(async (req, res) => {
 });
 
 exports.read = catchAsyncErrors(async (req, res) => {
-  const contact = await Contact.findById(req.query.id);
+
+ const contact = await Contact.findById(req.params.id).populate('group','name');
   if (!contact) return next(new ErrorHandler('No contact found', 404));
 
   res.status(200).json({
@@ -78,6 +101,7 @@ exports.update = catchAsyncErrors(async (req, res) => {
 
   res.status(200).json({
     success: true,
+    msg:'Contact updated successfully',
     contact,
   });
 });

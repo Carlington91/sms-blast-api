@@ -12,7 +12,7 @@ const {
 router.use(auth);
 router.post('/', create);
 router.get('/', list);
-router.get('/', read);
+router.get('/:id', read);
 router.put('/', update);
 router.delete('/', remove);
 
